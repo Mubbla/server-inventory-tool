@@ -6,11 +6,32 @@ import csv
 from pathlib import Path
 # Standardbibliotek för datum och tid
 from datetime import datetime
+# Standardbibliotek för operativsystemfunktioner och miljövariabler
+import os
 
+# Hämtar namnet på datafilen från miljövariabeln INVENTORY_DATAFIL.
+# Om variabeln inte finns används servrar.json som standardvärde.
+def hamta_datafil():
+    return os.getenv(
+        "INVENTORY_DATAFIL",
+        "servrar.json"
+    )
 
-# Läs innehållet i JSON-fil
+# Läser in servrar från JSON-filen
 def ladda_servrar():
-    with open("servrar.json", "r", encoding="utf-8") as fil:
+
+    # Hämtar filnamnet från miljövariabeln eller standardfilen
+    datafil = hamta_datafil()
+
+    # Skapar ett Path-objekt för filkontroll
+    fil = Path(datafil)
+
+    # Returnera tom lista om filen inte finns
+    if not fil.exists():
+        return []
+
+    # Läser in och returnerar innehållet i JSON-filen
+    with open(fil, "r", encoding="utf-8") as fil:
         return json.load(fil)
 
 

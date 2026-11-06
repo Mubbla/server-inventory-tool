@@ -38,5 +38,21 @@
     "roll": "testserver",
     "status": "unknown",
     "senast_kontrollerad": ""
+  },
+  {
+    "namn": "ggg",
+    "adress": "1.2.3.4",
+    "miljo": "dev",
+    "roll": "vvv",
+    "status": "unknown",
+    "senast_kontrollerad": ""
+  },
+  {
+    "namn": "bhuyt",
+    "adress": "333",
+    "miljo": "test",
+    "roll": "vbvdsj",
+    "status": "unknown",
+    "senast_kontrollerad": ""
   }
 ]

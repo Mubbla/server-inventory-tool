@@ -4,8 +4,10 @@
 # Startar textmenyn om inga argument anges.
 # Anropar rätt funktioner vid CLI-körning.
 
+# Standardbibliotek för parsning
 import argparse
 from meny import starta_meny
+from lagring import serverlista
 
 def main():
     # Skapa tolk för det som användaren skriver på kommandoraden
@@ -23,7 +25,7 @@ def main():
         print("Exportera CSV")
 
     else:
-        starta_meny()
+        starta_meny(serverlista)
 # Om jag körs som ett eget program, starta main()
 if __name__ == "__main__":
     main()

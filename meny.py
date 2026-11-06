@@ -1,6 +1,6 @@
 from kontroller import (validate_choice, giltiga_menyval, giltiga_miljoval, giltiga_statuskoder,
-                        vill_avbryta)
-from lagring import spara_servrar, exportera_csv
+                        vill_avbryta, pinga_server)
+from lagring import hamta_datafil, spara_servrar, exportera_csv
 # Standardbibliotek för hantering av sökvägar
 from pathlib import Path
 
@@ -22,7 +22,7 @@ def starta_meny(serverlista):
                 visa_alla(serverlista)
 
             elif val == 2:
-                #(visa_server_i_miljo(serverlista))
+                #(visa_servrar_i_miljo(serverlista))
                 print("under construction...")
 
             elif val == 3:
@@ -33,8 +33,7 @@ def starta_meny(serverlista):
                 print("under construction...")
 
             elif val == 5:
-                #kontrollera_server(serverlista)
-                print("under construction...")
+                kontrollera_server(serverlista)
 
             elif val == 6:
                 #kontrollera_alla_servrar(serverlista)
@@ -56,15 +55,13 @@ def visa_meny():
     print("")
     print("==================================")
     print("   === Server Inventory Tool ===  ")
-    print("   1. Visa alla server            ")
+    print("   1. Visa alla servrar           ")
     print("   2. Visa servrar i en miljö     ")
     print("   3. Lägg till server            ")
     print("   4. Ta bort server              ")
     print("   5. Kontrollera en server       ")
     print("   6. Kontrollera alla servrar    ")
     print("   7. Exportera CSV-fil           ")
-    print("   8. Spara rapport ??            ")
-    print("   9. Ändra status??              ")
     print("   0. Avsluta                     ")
     print("==================================")
     print("")
@@ -152,46 +149,9 @@ def lagg_till(serverlista):
         }
 
     serverlista.append(ny_server)  # ny server sist i listan som skapats fån json-filen
-    spara_servrar()  # spara till json-filen
+    spara_servrar(serverlista)  # spara till json-filen
     print()
     print(f"servern '{namn}' har lagts till")
-
-# Funktion för att ändra status för en server
-def andra_status(serverlista):
-
-    print()
-    namn = input("Ange serverns namn (0 för att återgå till huvudmenyn): ").strip().lower()
-    if vill_avbryta(namn):
-        return
-
-    for server in serverlista:
-        if server['namn'].lower() == namn:
-            while True:
-                ny_status = input("Ange ny status (up/down/unknown): ").strip().lower()
-
-                if validate_choice(ny_status, giltiga_statuskoder):
-                    server["status"] = ny_status
-                    spara_servrar(serverlista)
-                    print(f"Status för '{namn}' har uppdaterats till {server['status']}")
-                    return  # avslutar hela funktionen
-
-                print("Ogiltig status.")
-
-        print(f"servern '{namn}' hittades inte")
-
-def check_service(namn, status):
-
-    if status == "up":
-        print(f"{'[OK]':<5} {namn}")
-    elif status == "down":
-        print(f"{'[FEL]':<5} {namn}")
-    else:
-        print("Ogiltig status")
-
-def print_report(serverlista):
-
-    for server in serverlista:
-        check_service(server['namn'], server['status'])
 
 
 def spara_rapport(serverlista):
@@ -211,3 +171,34 @@ def spara_rapport(serverlista):
             fil.write(f"{namn:<15} {status}\n")
 
     print("Filen rapport.txt har sparats.")
+
+# Funktion för att ändra status för en server
+def andra_status(serverlista, server, status):
+
+    server['status'] = status
+    spara_servrar(serverlista)
+
+
+def kontrollera_server(serverlista):
+
+    print()
+    # Här ska vara en loop för att kolla input
+    namn = input("Ange serverns namn (0 för att återgå till huvudmenyn): ").strip().lower()
+
+    if vill_avbryta(namn):
+        return
+
+    for server in serverlista:
+        if server['namn'].lower() == namn:
+            status = ""
+            if pinga_server(server['adress']):
+                print("Servern är uppe")
+                status = "up"
+            else:
+                print("Servern är nere")
+                status = "down"
+
+            andra_status(serverlista, server, status)
+            return
+
+    print(f"Servern '{namn}' hittades inte")

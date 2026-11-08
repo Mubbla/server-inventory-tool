@@ -1,26 +1,10 @@
 [
   {
-    "namn": "web01",
-    "adress": "example.com",
-    "miljo": "prod",
-    "roll": "webbserver",
-    "status": "up",
-    "senast_kontrollerad": ""
-  },
-  {
-    "namn": "db01",
-    "adress": "127.0.0.1",
-    "miljo": "prod",
-    "roll": "databasserver",
-    "status": "unknown",
-    "senast_kontrollerad": ""
-  },
-  {
     "namn": "test01",
     "adress": "192.0.2.10",
     "miljo": "test",
     "roll": "testserver",
-    "status": "unknown",
+    "status": "down",
     "senast_kontrollerad": ""
   },
   {
@@ -28,15 +12,7 @@
     "adress": "localhost",
     "miljo": "dev",
     "roll": "utvecklingsserver",
-    "status": "unknown",
-    "senast_kontrollerad": ""
-  },
-  {
-    "namn": "bew03",
-    "adress": "127.1.0.3",
-    "miljo": "dev",
-    "roll": "testserver",
-    "status": "unknown",
+    "status": "up",
     "senast_kontrollerad": ""
   },
   {
@@ -48,10 +24,26 @@
     "senast_kontrollerad": ""
   },
   {
-    "namn": "bhuyt",
-    "adress": "333",
-    "miljo": "test",
-    "roll": "vbvdsj",
+    "namn": "web01",
+    "adress": "example.com",
+    "miljo": "prod",
+    "roll": "webbserver",
+    "status": "unknown",
+    "senast_kontrollerad": ""
+  },
+  {
+    "namn": "db01",
+    "adress": "127.0.0.1",
+    "miljo": "prod",
+    "roll": "databasserver",
+    "status": "up",
+    "senast_kontrollerad": "2026YYY-11m-08d 16H:09M"
+  },
+  {
+    "namn": "kalle",
+    "adress": "12.12",
+    "miljo": "prod",
+    "roll": "databasserver",
     "status": "unknown",
     "senast_kontrollerad": ""
   }

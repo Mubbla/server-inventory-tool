@@ -1,10 +1,11 @@
+# inputkontroll.py
 # Kontroller för input från användaren
 
 # Giltiga menyval
 giltiga_menyval = [0,1,2,3,4,5,6,7]
 
 # Giltiga miljöer
-giltiga_miljoval = ["test", "dev", "prod"]
+giltiga_miljoer = ["test", "dev", "prod"]
 
 # Giltiga statuskoder
 giltiga_statuskoder = ["up", "down", "unknown"]

@@ -1,7 +1,9 @@
-from inputkontroll import (giltiga_statuskoder, giltiga_menyval, giltiga_miljoval,
+# meny.py
+
+from inputkontroll import (giltiga_statuskoder, giltiga_menyval, giltiga_miljoer,
                         vill_avbryta, validate_choice)
 from kontroller import pinga_server
-from lagring import hamta_datafil, spara_servrar, exportera_csv
+from lagring import spara_servrar, exportera_csv
 from datetime import datetime
 
 
@@ -24,7 +26,6 @@ def starta_meny(serverlista):
         if validate_choice(val, giltiga_menyval):
 
             if val == 1:
-                # Skriv ut alla server
                 skriv_ut_servrar(serverlista)
 
             elif val == 2:
@@ -37,7 +38,7 @@ def starta_meny(serverlista):
                 ta_bort_server(serverlista)
 
             elif val == 5:
-                kontrollera_en_server(serverlista)
+                kontrollera_server(serverlista)
 
             elif val == 6:
                 kontrollera_alla_servrar(serverlista)
@@ -48,7 +49,7 @@ def starta_meny(serverlista):
             elif val == 0:
                 print(f"Avslutar....")
                 print()
-                break;
+                break
         else:
             print(f"Ogiltigt val. Försök igen.")
 
@@ -158,7 +159,7 @@ def lagg_till(serverlista):
             return
 
         # Kontrollerar att input finns som giltigt värde.
-        if validate_choice(miljo, giltiga_miljoval):
+        if validate_choice(miljo, giltiga_miljoer):
             break
 
         print("Ogiltig miljö. Ange dev, test eller prod.")
@@ -274,30 +275,47 @@ def hitta_servrar(serverlista, nyckel, sokvarde):
 ##### ----- Funktioner för att kontrollera servrar -----#####
 
 # Anropas från menyn
-def kontrollera_en_server(serverlista):
+def kontrollera_server(serverlista):
 
     while True:
         print()
-        namn = input("Ange servernamn för att pinga (0 för att återgå till huvudmenyn): ").strip().lower()
+        namn = input("Ange servernamn (0 för att avbryta): ").strip().lower()
 
         # Återgå till huvudmenyn.
         if vill_avbryta(namn):
             return
 
         # Oavsett om servern finns eller ej, körs nästa varv i
-        # while-loopen; användaren får möjlighet att pinga en server till.
-        server = hitta_server(serverlista,"namn", namn)
+        # while-loopen; användaren får möjlighet att försöka igen.
+        server = kontrollera_server_med_namn(serverlista, namn)
+
         if server:
             kontrollera_serverstatus(server)
             spara_servrar(serverlista)
-            print(f"{server['namn']} kontaktas...")
-            print()
-            print(f"{'Namn':<15}{'Status':<15}")
-            print(f"{server['namn']:<15}{server['status']:<15}")
+            skriv_ut_serverstatus(server)
             continue
         else:
             print(f"Servern '{namn}' finns inte.")
             continue
+
+def kontrollera_server_med_namn(serverlista, namn):
+
+    server = hitta_server(
+        serverlista,
+        "namn",
+        namn
+    )
+
+    if not server:
+        return None
+
+    print(f"{server['namn']} kontaktas...")
+    print()
+
+    kontrollera_serverstatus(server)
+    spara_servrar(serverlista)
+
+    return server
 
 # Anropa kontrollera_server för varje server i listan.
 def kontrollera_alla_servrar(serverlista):
@@ -307,11 +325,13 @@ def kontrollera_alla_servrar(serverlista):
     print(f"{'Namn':<15}{'Status':<15}")
     for server in serverlista:
         kontrollera_serverstatus(server)
-        print(f"{server['namn']:<15}{server['status']:<15}")
+        skriv_ut_serverstatus(server)
+        #print(f"{server['namn']:<15}{server['status']:<15}")
 
     spara_servrar(serverlista)
 
-# Denna används både av kontrollera_en_server och kontrollera_alla_servrar
+# Denna används både för att kontrollera en server och för att kontrollera alla
+# samt från både textmeny och kommandorad.
 def kontrollera_serverstatus(server):
 
     status = "unknown"
@@ -329,12 +349,21 @@ def kontrollera_serverstatus(server):
 
 
 # Uppdatera ett fält för en server.
-# Har valt denna design för att kunna återanvända funktionen.
+# Har valt denna design för att kunna återanvända funktionen om andra fält än
+# status kan komma att uppdateras.
 def uppdatera_data(server, nyckel, nytt_varde):
     server[nyckel] = nytt_varde
 
     # Uppdatera tidpunkten när status ändras till en giltig status.
     if nyckel == "status" and nytt_varde in giltiga_statuskoder:
         server["senast_kontrollerad"] = datetime.now().strftime("%Y-%m-%d %H:%M")
+
+# Denna används både för att kontrollera en server och för att kontrollera alla
+# samt från både textmeny och kommandorad.
+def skriv_ut_serverstatus(server):
+
+    print()
+    print(f"{'Namn':<15}{'Status':<15}")
+    print(f"{server['namn']:<15}{server['status']:<15}")
 
 

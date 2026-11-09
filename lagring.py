@@ -37,7 +37,10 @@ def ladda_servrar():
 
 # Sparar serverlista permanent i JSON-fil
 def spara_servrar(serverlista):
-    with open("servrar.json", "w", encoding="utf-8") as fil:
+
+    datafil = hamta_datafil()
+
+    with open(datafil, "w", encoding="utf-8") as fil:
         json.dump(
             serverlista,        # Info som sparas
             fil,                # Filobjekt

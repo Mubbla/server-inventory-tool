@@ -1,5 +1,5 @@
-from inputkontroll import (validate_choice, giltiga_menyval, giltiga_miljoval,
-                        vill_avbryta)
+from inputkontroll import (giltiga_statuskoder, giltiga_menyval, giltiga_miljoval,
+                        vill_avbryta, validate_choice)
 from kontroller import pinga_server
 from lagring import hamta_datafil, spara_servrar, exportera_csv
 from datetime import datetime
@@ -25,11 +25,10 @@ def starta_meny(serverlista):
 
             if val == 1:
                 # Skriv ut alla server
-                visa_alla(serverlista)
+                skriv_ut_servrar(serverlista)
 
             elif val == 2:
-                #(visa_servrar_i_miljo(serverlista))
-                print("under construction...")
+                visa_servrar_i_miljo(serverlista)
 
             elif val == 3:
                 lagg_till(serverlista)
@@ -70,8 +69,8 @@ def visa_meny():
     print("==================================")
     print("")
 
-# Funktion för att skriva ut alla servrar
-def visa_alla(serverlista):
+# Funktion för att skriva ut alla servrar i en lista
+def skriv_ut_servrar(serverlista):
     print()
     print(f"{'Namn':<15}{'Adress':<15}{'Miljö':<15}"
           f"{'Roll':<20}{'Status':<15}{'Senast kontrollerad'}")
@@ -80,18 +79,42 @@ def visa_alla(serverlista):
         print(f"{server['namn']:<15}{server['adress']:<15}{server['miljo']:<15}"
               f"{server['roll']:<20}{server['status']:<15}{server['senast_kontrollerad']}")
 
+# Skriv ut alla servrar i en miljö.
+def visa_servrar_i_miljo(serverlista):
+
+    while True:
+        print()
+        miljo = (input("Ange miljö (0 för att avbryta): ").strip().lower())
+
+        # Kontrollera om användaren vill återgå till huvudmenyn. Avslutar isåfall funktionen.
+        if vill_avbryta(miljo):
+            return
+
+        # Avbryt detta varv för att återgå till inmatning av miljo/0.
+        if miljo == "":
+            print("Namn får inte vara tomt.")
+            continue
+
+        # Hämta alla servrar i miljön till en lista
+        servrar_i_miljo = hitta_servrar(serverlista, "miljo", miljo)
+
+        if servrar_i_miljo:
+            skriv_ut_servrar(servrar_i_miljo)
+
 
 # Funktion för att lägga till en ny server
 def lagg_till(serverlista):
+
     # Servernamn
     while True:
-        namn = (input("Ange serverns namn (0 för att återgå till huvudmenyn): ").strip().lower())
+        namn = (input("Ange serverns namn (0 för att avbryta): ").strip().lower())
         namn_upptaget = False
 
-        # Kontrollera om användaren vill återgå till huvudmenyn. Avslutar isåfall funktionen.
+        # Kontrollera om användaren vill avbryta. Avslutar isåfall funktionen.
         if vill_avbryta(namn):
             return
 
+        # Avbryt detta varv för att återgå till inmatning av namn/0.
         if namn == "":
             print("Namn får inte vara tomt.")
             continue
@@ -102,7 +125,7 @@ def lagg_till(serverlista):
                 print()
                 print("En server med det namnet finns redan.")
                 namn_upptaget = True
-                # Avsluta for-loop om namnaet hittats
+                # Avsluta for-loop om namnet hittats
                 break
 
         # Avbryt detta varv för att återgå till inmatning av namn/0.
@@ -172,7 +195,7 @@ def lagg_till(serverlista):
 
 def ta_bort_server(serverlista):
     while True:
-        namn = (input("Ange serverns namn (0 för att återgå till huvudmenyn): ").strip().lower())
+        namn = (input("Ange serverns namn (0 för att avbryta): ").strip().lower())
 
         # Kontrollera om användaren vill återgå till huvudmenyn. Avslutar isåfall funktionen.
         if vill_avbryta(namn):
@@ -183,21 +206,19 @@ def ta_bort_server(serverlista):
             print("Namn får inte vara tomt.")
             continue
 
-        # Värde som används för servrar i prod
-        bekraftelse = None #null
         server_hittad = False
-        print(len(serverlista))
+
+        bekraftelse = None  # null
+
         for server in serverlista:
-            print(server["namn"].lower())
-            print (namn)
             if server["namn"].lower() == namn:
                 server_hittad = True
                 if server["miljo"] == "prod":
                     # Bekräftelse för prodmiljö
                     while True:
                         print()
-                        bekraftelse = input("Denna server är i prodmiljö. Är du riktigt säker tryck retur."
-                                         " (0 för att välja annan server) " ).strip()
+                        bekraftelse = input("Denna server är i prodmiljö. Är du säker tryck retur."
+                                         " (0 för att avbryta) " ).strip()
                         # Användaren vill ange en annan server. Avsluta bekräftelsens while-loop.
                         if bekraftelse == "0":
                             break
@@ -219,15 +240,36 @@ def ta_bort_server(serverlista):
                 serverlista.remove(server)
                 spara_servrar(serverlista)
                 print()
-                print(f"Servern '{namn}' har lagts till")
+                print(f"Servern '{namn}' har tagits bort.")
                 return
 
         if not server_hittad:
-            print(f"Servern '{namn}' finns inte")
+            print(f"Servern '{namn}' finns inte.")
 
         # Går vidare i yttre while-loopen och frågar efter servernaman
         if bekraftelse == "0":
             continue
+
+
+# Har valt denna design för att eventuellt kunna återanvända funktionen.
+# Returnera den första servern med matchande värde i nyckeln.
+def hitta_server(serverlista, nyckel, sokvarde):
+
+    for server in serverlista:
+        if server[nyckel].lower() == sokvarde.lower():
+            return server
+
+    return None
+
+# Returnera en lista av servrar med matchande värden i nyckeln.
+def hitta_servrar(serverlista, nyckel, sokvarde):
+    resultatlista = []
+
+    for server in serverlista:
+        if server[nyckel].lower() == sokvarde.lower():
+            resultatlista.append(server)
+
+    return resultatlista
 
 ##### ----- Funktioner för att kontrollera servrar -----#####
 
@@ -235,6 +277,7 @@ def ta_bort_server(serverlista):
 def kontrollera_en_server(serverlista):
 
     while True:
+        print()
         namn = input("Ange servernamn för att pinga (0 för att återgå till huvudmenyn): ").strip().lower()
 
         # Återgå till huvudmenyn.
@@ -243,8 +286,10 @@ def kontrollera_en_server(serverlista):
 
         # Oavsett om servern finns eller ej, körs nästa varv i
         # while-loopen; användaren får möjlighet att pinga en server till.
-        server = hitta_och_uppdatera_server(serverlista, namn)
+        server = hitta_server(serverlista,"namn", namn)
         if server:
+            kontrollera_serverstatus(server)
+            spara_servrar(serverlista)
             print(f"{server['namn']} kontaktas...")
             print()
             print(f"{'Namn':<15}{'Status':<15}")
@@ -261,49 +306,35 @@ def kontrollera_alla_servrar(serverlista):
     print()
     print(f"{'Namn':<15}{'Status':<15}")
     for server in serverlista:
-        server = hitta_och_uppdatera_server(serverlista, server['namn'])
+        kontrollera_serverstatus(server)
         print(f"{server['namn']:<15}{server['status']:<15}")
 
-# Denna kan användas både av kontrollera_en_server och kontrollera_alla_servrar
-def hitta_och_uppdatera_server(serverlista, namn):
+    spara_servrar(serverlista)
 
-    server = hitta_server(serverlista, namn)
+# Denna används både av kontrollera_en_server och kontrollera_alla_servrar
+def kontrollera_serverstatus(server):
+
     status = "unknown"
-
-    # Om servern har hittats i listan, pinga och uppdatera status.
-    if server:
-        print()
-        # Om servern svarar, sätt status till up...
-        if pinga_server(server['adress']):
-            status = "up"
-        # ...om inte, sätt status till down
-        else:
-            status = "down"
-
-        uppdatera_status(server, namn, status)
-        spara_servrar(serverlista)
-        return server
-    # Om servern inte hittas
+    # Pinga och uppdatera status.
+    print()
+    # Om servern svarar, sätt status till up...
+    if pinga_server(server['adress']):
+        status = "up"
+    # ...om inte, sätt status till down
     else:
-        return None
+        status = "down"
 
-# Hitta en server
-def hitta_server(serverlista, namn):
-
-    for server in serverlista:
-        if server['namn'].lower() == namn:
-            # Om servern finns returneras den
-            return server
-
-    # Om servern inte finns returneras tomt värde
-    return None
+    # Uppdatera serverlistan
+    uppdatera_data(server, "status", status)
 
 
-# Uppdatera serverdata. Om data är status, uppdatera timestamp.
-def uppdatera_data(server, namn, data):
+# Uppdatera ett fält för en server.
+# Har valt denna design för att kunna återanvända funktionen.
+def uppdatera_data(server, nyckel, nytt_varde):
+    server[nyckel] = nytt_varde
 
-        server[data] = data
-        if data == "status":
-            server['senast_kontrollerad'] = datetime.now().strftime("%Y-%m-%d %H:%M")
+    # Uppdatera tidpunkten när status ändras till en giltig status.
+    if nyckel == "status" and nytt_varde in giltiga_statuskoder:
+        server["senast_kontrollerad"] = datetime.now().strftime("%Y-%m-%d %H:%M")
 
 

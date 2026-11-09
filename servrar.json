@@ -5,7 +5,8 @@
     "miljo": "test",
     "roll": "testserver",
     "status": "down",
-    "senast_kontrollerad": "2026-11-09 13:22"
+    "senast_kontrollerad": "2026-11-09 17:37",
+    "down": "down"
   },
   {
     "namn": "dev01",
@@ -13,7 +14,8 @@
     "miljo": "dev",
     "roll": "utvecklingsserver",
     "status": "up",
-    "senast_kontrollerad": "2026-11-09 13:22"
+    "senast_kontrollerad": "2026-11-09 17:37",
+    "up": "up"
   },
   {
     "namn": "ggg",
@@ -21,7 +23,8 @@
     "miljo": "dev",
     "roll": "vvv",
     "status": "down",
-    "senast_kontrollerad": "2026-11-09 13:22"
+    "senast_kontrollerad": "2026-11-09 17:38",
+    "down": "down"
   },
   {
     "namn": "web01",
@@ -29,7 +32,8 @@
     "miljo": "prod",
     "roll": "webbserver",
     "status": "up",
-    "senast_kontrollerad": "2026-11-09 13:22"
+    "senast_kontrollerad": "2026-11-09 17:38",
+    "up": "up"
   },
   {
     "namn": "db01",
@@ -37,14 +41,23 @@
     "miljo": "prod",
     "roll": "databasserver",
     "status": "up",
-    "senast_kontrollerad": "2026-11-09 13:26"
+    "senast_kontrollerad": "2026-11-09 17:38",
+    "up": "up"
   },
   {
-    "namn": "kalle",
-    "adress": "12.12",
-    "miljo": "prod",
-    "roll": "databasserver",
+    "namn": "hhh",
+    "adress": "34",
+    "miljo": "dev",
+    "roll": "eeeee",
     "status": "down",
-    "senast_kontrollerad": "2026-11-09 13:22"
+    "senast_kontrollerad": "2026-11-09 17:38"
+  },
+  {
+    "namn": "lll",
+    "adress": "89",
+    "miljo": "prod",
+    "roll": "kkk",
+    "status": "down",
+    "senast_kontrollerad": "2026-11-09 17:38"
   }
 ]

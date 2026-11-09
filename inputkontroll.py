@@ -6,8 +6,8 @@ giltiga_menyval = [0,1,2,3,4,5,6,7]
 # Giltiga miljöer
 giltiga_miljoval = ["test", "dev", "prod"]
 
-# Giltiga statuskoder behövs inte till något i nuläget
-# giltiga_statuskoder = ["up", "down", "unknown"]
+# Giltiga statuskoder
+giltiga_statuskoder = ["up", "down", "unknown"]
 
 # Jämför input med giltiga värden och returnerar True om input är giltigt.
 def validate_choice(input, giltiga_varden):

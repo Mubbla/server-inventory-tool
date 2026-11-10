@@ -38,7 +38,7 @@ def starta_meny(serverlista):
                 ta_bort_server(serverlista)
 
             elif val == 5:
-                kontrollera_server(serverlista)
+                kontrollera_serverinput(serverlista)
 
             elif val == 6:
                 kontrollera_alla_servrar(serverlista)
@@ -80,8 +80,8 @@ def skriv_ut_servrar(serverlista):
         print(f"{server['namn']:<15}{server['adress']:<15}{server['miljo']:<15}"
               f"{server['roll']:<20}{server['status']:<15}{server['senast_kontrollerad']}")
 
-# Skriv ut alla servrar i en miljö.
-def visa_servrar_i_miljo(serverlista):
+#
+def kontrollera_input_miljo(serverlista):
 
     while True:
         print()
@@ -96,11 +96,16 @@ def visa_servrar_i_miljo(serverlista):
             print("Namn får inte vara tomt.")
             continue
 
-        # Hämta alla servrar i miljön till en lista
-        servrar_i_miljo = hitta_servrar(serverlista, "miljo", miljo)
 
-        if servrar_i_miljo:
-            skriv_ut_servrar(servrar_i_miljo)
+
+# Hitta och skriv ut alla servrar i en miljö.
+def visa_servrar_i_miljo (serverlista, nyckel, varde):
+
+    # Hämta alla servrar i miljön till en lista
+    servrar_i_miljo = hitta_servrar_med_nyckel(serverlista, nyckel, varde)
+
+    if servrar_i_miljo:
+        skriv_ut_servrar(servrar_i_miljo)
 
 
 # Funktion för att lägga till en ny server
@@ -211,6 +216,7 @@ def ta_bort_server(serverlista):
 
         bekraftelse = None  # null
 
+        # Här kan jag använda hitta_server. Sen...
         for server in serverlista:
             if server["namn"].lower() == namn:
                 server_hittad = True
@@ -263,7 +269,7 @@ def hitta_server(serverlista, nyckel, sokvarde):
     return None
 
 # Returnera en lista av servrar med matchande värden i nyckeln.
-def hitta_servrar(serverlista, nyckel, sokvarde):
+def hitta_servrar_med_nyckel(serverlista, nyckel, sokvarde):
     resultatlista = []
 
     for server in serverlista:
@@ -275,7 +281,7 @@ def hitta_servrar(serverlista, nyckel, sokvarde):
 ##### ----- Funktioner för att kontrollera servrar -----#####
 
 # Anropas från menyn
-def kontrollera_server(serverlista):
+def kontrollera_serverinput(serverlista):
 
     while True:
         print()
@@ -290,29 +296,26 @@ def kontrollera_server(serverlista):
         server = kontrollera_server_med_namn(serverlista, namn)
 
         if server:
-            kontrollera_serverstatus(server)
-            spara_servrar(serverlista)
-            skriv_ut_serverstatus(server)
             continue
         else:
             print(f"Servern '{namn}' finns inte.")
+            print()
             continue
 
 def kontrollera_server_med_namn(serverlista, namn):
 
-    server = hitta_server(
-        serverlista,
-        "namn",
-        namn
-    )
+    server = hitta_server( serverlista, "namn", namn)
 
     if not server:
         return None
 
+    print()
     print(f"{server['namn']} kontaktas...")
     print()
+    print(f"{'Namn':<15}{'Status':<15}")
 
-    kontrollera_serverstatus(server)
+    kontrollera_status(server)
+    skriv_ut_serverstatus(server)
     spara_servrar(serverlista)
 
     return server
@@ -324,19 +327,18 @@ def kontrollera_alla_servrar(serverlista):
     print()
     print(f"{'Namn':<15}{'Status':<15}")
     for server in serverlista:
-        kontrollera_serverstatus(server)
+        kontrollera_status(server)
         skriv_ut_serverstatus(server)
-        #print(f"{server['namn']:<15}{server['status']:<15}")
 
     spara_servrar(serverlista)
 
+# Pinga och uppdatera status.
 # Denna används både för att kontrollera en server och för att kontrollera alla
 # samt från både textmeny och kommandorad.
-def kontrollera_serverstatus(server):
+def kontrollera_status(server):
 
     status = "unknown"
-    # Pinga och uppdatera status.
-    print()
+
     # Om servern svarar, sätt status till up...
     if pinga_server(server['adress']):
         status = "up"
@@ -362,8 +364,6 @@ def uppdatera_data(server, nyckel, nytt_varde):
 # samt från både textmeny och kommandorad.
 def skriv_ut_serverstatus(server):
 
-    print()
-    print(f"{'Namn':<15}{'Status':<15}")
     print(f"{server['namn']:<15}{server['status']:<15}")
 
 

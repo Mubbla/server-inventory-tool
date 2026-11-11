@@ -2,7 +2,7 @@
 
 from inputkontroll import (giltiga_menyval, giltiga_miljoer,
                         vill_avbryta, validera_val,servernamn_ar_giltigt)
-from kontroller import pinga_server
+from kontroller import kontrollera_status
 from lagring import spara_servrar, exportera_rapporter
 from serverhantering import hitta_server, hitta_servrar_med_nyckel, uppdatera_serverdata
 
@@ -197,7 +197,7 @@ def ta_bort_server(serverlista):
 
     while True:
         print()
-        namn = (input("Ange vilken server vill du ta bort (0 för att avbryta): ").strip().lower())
+        namn = (input("Ange vilken server du vill ta bort (0 för att avbryta): ").strip().lower())
 
         # Kontrollera om användaren vill återgå till huvudmenyn. Avslutar isåfall funktionen.
         if vill_avbryta(namn):
@@ -300,21 +300,7 @@ def kontrollera_alla_servrar(serverlista):
 
     spara_servrar(serverlista)
 
-# Pinga och uppdatera status.
-# Denna används både för att kontrollera en server och för att kontrollera alla.
-def kontrollera_status(server):
 
-    status = "unknown"
-
-    # Om servern svarar, sätt status till up...
-    if pinga_server(server['adress']):
-        status = "up"
-    # ...om inte, sätt status till down
-    else:
-        status = "down"
-
-    # Uppdatera serverlistan
-    uppdatera_serverdata(server, "status", status)
 
 
 

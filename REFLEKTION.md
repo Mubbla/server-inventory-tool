@@ -14,11 +14,13 @@ G5 kräver att ändringar sparas till JSON-filen. I `meny.py` anropas `spara_ser
 
 Ett alternativ hade varit att vänta med att spara tills programmet avslutas. Det hade minskat antalet skrivningar till filen, men ändringar skulle kunna gå förlorade om programmet stängdes oväntat. Med min lösning finns ändringarna kvar efter att operationen har slutförts. Nackdelen är att filen skrivs oftare. Om många uppdateringar gjordes automatiskt skulle jag överväga en databas för snabbare uppslagning och säkrare datauppdateringar.
 
-## 3. Modulindelning och parametrar
+## ## 3. Val av modulindelning och parametrar
 
-G17 kräver minst tre egna moduler. Jag delade upp programmet i `main.py`, `meny.py`, `lagring.py`, `kontroller.py` och `inputkontroll.py`. `main.py` hanterar CLI och programstart, `meny.py` hanterar meny och utskrifter, `lagring.py` hanterar filer och rapporter, `kontroller.py` kör ping och `inputkontroll.py` samlar validering.
+G17 kräver att programmet delas upp i minst tre egna moduler. Kravet bestämde alltså att jag skulle använda flera filer, men jag valde själv hur jag skulle fördela ansvaret mellan dem. `main.py` startar programmet och hanterar CLI-argument. `meny.py` sköter textmenyn och användarinmatningen. I `serverhantering.py` finns funktioner för att hitta servrar och uppdatera deras data. `lagring.py` hanterar filer och rapporter, medan `kontroller.py` sköter ping och statuskontroll. `inputkontroll.py` innehåller funktioner och värden för validering.
 
-Jag valde att låta funktionerna ta emot serverlistan som parameter i stället för att låta menyfunktionerna använda en global variabel. Exempelvis skickar `main.py` listan till `starta_meny(serverlista)`, som sedan skickar den vidare vid behov. Det gör det tydligt vilken data funktionen arbetar med och gör den lättare att återanvända. Nackdelen är att listan ibland måste skickas genom flera funktionsanrop. Om programmet växte skulle jag också överväga att flytta gemensam serverlogik från `meny.py` till en separat modul, så att CLI och meny tydligare använder samma logik utan att CLI behöver anropa funktioner som ligger i menymodulen.
+Ett alternativ hade varit att ha färre filer och samla mer kod i exempelvis `meny.py`. Det hade varit enklare att navigera i början, men den filen skulle då blanda menyhantering med sökning, uppdatering, lagring och kontroll. Med den nuvarande uppdelningen är det tydligare var olika funktioner hör hemma. Nackdelen är att fler moduler innebär fler importer och att man behöver se upp så att modulerna inte börjar importera varandra i en cirkel.
+
+Jag låter funktioner ta emot serverlistan som parameter i stället för att hämta en global lista själva. Det gör tydligare vilka data funktionen behöver, även om listan ibland måste skickas vidare genom flera funktionsanrop. Om programmet växte ytterligare skulle jag fundera på en separat modul för gemensam logik som används av både meny och CLI.
 
 ## 4. Datafil och miljövariabel
 
@@ -28,7 +30,7 @@ Kravet bestämde att miljövariabeln skulle användas, men implementationen beh�
 
 ## 5. Ping och kommandoradsgränssnitt
 
-G9 kräver att ping körs med `subprocess.run()`, att kommandot skickas som en lista och att exitkoden avgör resultatet. I `kontroller.py` gör `pinga_server()` detta. Funktionen använder Linux-flaggan `-c` och returnerar `True` om pingkommandot får exitkod 0.
+G9 kräver att ping körs med `subprocess.run()`, att kommandot skickas som en lista och att exitkoden avgör resultatet. I `kontroller.py` gör `pinga_server()` detta. Funktionen använder Linux-flaggan `-c` och returnerar `True` om pingkommandot får exitkod 0. Kommandot skickas som en lista så att `ping`, flaggorna och adressen blir separata argument. Det gör anropet tydligare och innebär att kommandot inte behöver byggas ihop till en enda textsträng som ett skal ska tolka.
 
 Uppgiften kräver också både textmeny och CLI. Jag återanvänder funktioner för kontroll och lagring så att samma grundläggande arbete inte behöver skrivas två gånger. I `main.py` används `argparse` för att läsa argument, och exitkoderna gör att kontrollkommandona kan användas i skript. För en användare som arbetar manuellt är menyn lätt att följa, medan CLI passar bättre för automatisering. Nackdelen är att programmet behöver hantera två sätt att starta samma funktioner.
 

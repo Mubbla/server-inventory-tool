@@ -9,10 +9,9 @@ I `inputkontroll.py`, i funktionen `validate_choice()`, används en `for`-loop f
 I `meny.py`, i funktionen `hitta_server()`, används parametrarna `serverlista`, `nyckel` och `sokvarde` för att söka efter en server. Om funktionen hittar en matchande server returnerar den serverns dictionary. Om ingen matchning hittas returnerar den `None`.
 
 ## 2. Lista med dictionaries och datatyper
+Jag använder en lista med dictionaries för att lagra servrarna. Listan samlar alla servrar, och varje dictionary innehåller uppgifter om en server. I lagring.py läses listan in från JSON-filen. Funktionerna i meny.py får listan som parameter när de behöver visa eller ändra serverdata. I serverhantering.py finns sökfunktionerna hitta_server() och hitta_servrar_med_nyckel(), som söker igenom listan efter servrar som matchar namn eller miljö.
 
-Jag använder en lista med dictionaries för att lagra servrarna. Listan samlar alla servrar, och varje dictionary innehåller uppgifter om en server. Det gör det möjligt att gå igenom servrarna med loopar och hitta dem med exempelvis namn eller miljö. I `lagring.py` läses listan in från JSON-filen, och funktionerna i `meny.py` får listan som parameter när de behöver visa eller ändra serverdata.
-
-Värdena för `namn`, `adress`, `miljo`, `roll`, `status` och `senast_kontrollerad` är strängar. Listan innehåller alltså dictionaries vars nycklar och värden sparas som text.
+Värdena för namn, adress, miljo, roll, status och senast_kontrollerad är strängar. Varje server lagras alltså som en dictionary med strängnycklar och strängvärden, och alla dessa dictionaries ligger i en lista.
 
 ## 3. JSON och CSV
 
@@ -26,13 +25,15 @@ I `main.py` finns funktionen `main()`. Den använder `argparse` för att läsa k
 
 `meny.py` innehåller textmenyn och funktioner som hanterar inmatning, visar servrar, lägger till och tar bort servrar samt anropar serverkontrollerna.
 
+`serverhantering.py` innehåller funktioner för att hitta servrar och uppdatera serverdata, till exempel `hitta_server()`, `hitta_servrar_med_nyckel()` och `uppdatera_serverdata()`.
+
 `lagring.py` ansvarar för att läsa och spara serverdata i JSON samt skapa CSV- och sammanfattningsrapporter.
 
-`kontroller.py` innehåller funktionen `pinga_server()`, som kör ping-kommandot och avgör om servern svarar.
+`kontroller.py` innehåller funktionerna `pinga_server()` och `kontrollera_status()`. De kör pingkommandot och uppdaterar serverns status.
 
-`inputkontroll.py` innehåller listor med giltiga menyval, miljöer och statusar samt funktionerna `validate_choice()` och `vill_avbryta()`.
+`inputkontroll.py` innehåller listor med giltiga menyval, miljöer och statusar samt funktionerna `validera_val()`, `vill_avbryta()` och `servernamn_ar_giltigt()`.
 
-Jag låter funktionerna ta emot listan med servrar som parameter i stället för att använda en global variabel. På så sätt blir det tydligt vilka data funktionen arbetar med och funktionerna blir enklare att återanvända. Detta används bland annat i `meny.py`, där funktioner som visar eller ändrar servrar arbetar mot listan som skickas in från `main.py`.
+Jag låter funktionerna ta emot listan med servrar som parameter i stället för att använda en global variabel. På så sätt blir det tydligt vilka data funktionen arbetar med och funktionerna blir enklare att återanvända. I `main.py` skickas listan vidare till funktioner i `meny.py`, som använder den vid behov.
 
 ## 5. Moduler från standardbiblioteket
 
@@ -44,11 +45,11 @@ I `kontroller.py` används `subprocess` för att köra ping-kommandot.
 
 ## 6. Exempel på god praxis
 
-I `lagg_till()` i `meny.py` kontrolleras inmatningen innan en server sparas. Programmet frågar igen om namn eller adress är tomma, om namnet innehåller blanksteg eller om miljön inte är giltig. Det hindrar en del felaktiga värden från att hamna i serverlistan.
+I `lagg_till()` i `meny.py` kontrolleras inmatningen innan en server läggs till. Funktionen frågar igen om namnet eller adressen är tom, om namnet innehåller blanktecken eller om miljön inte är giltig. Den kontrollerar också att namnet inte redan används. Det minskar risken för felaktiga eller dubbla uppgifter i serverlistan.
 
-I `meny.py` finns `kontrollera_status()`, som används när en server eller alla servrar kontrolleras. Då behöver ping- och statuslogiken inte skrivas på flera ställen.
+I `kontroller.py` finns `kontrollera_status()`, som används både när en server kontrolleras och när alla servrar kontrolleras. Den gemensamma funktionen gör att ping- och statuslogiken bara behöver finnas på ett ställe. Funktionen `uppdatera_serverdata()` i `serverhantering.py` uppdaterar statusen och tidpunkten för den senaste kontrollen.
 
-I `kontroller.py` skickas ping-kommandot till `subprocess.run()` som en lista. Resultatets exitkod används för att avgöra om servern svarade. Det gör också att programmets CLI kan ge exitkod 1 om en server saknas eller är nere.
+I `kontroller.py` skickas pingkommandot till `subprocess.run()` som en lista. Programmets kod kontrollerar sedan kommandots exitkod för att avgöra om servern svarade. I `main.py` används serverns status för att avsluta CLI-kommandot med exitkod 1 om servern är nere eller inte hittas.
 
 ## 7. Källor och hjälpmedel
 

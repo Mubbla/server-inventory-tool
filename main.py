@@ -9,7 +9,7 @@ import argparse
 # Används för att avsluta programmet med en exitkod via sys.exit().
 import sys
 
-from meny import (starta_meny, skriv_ut_servrar,
+from meny import (starta_meny, visa_servrar,
                   kontrollera_server_med_namn, kontrollera_alla_servrar,
                  visa_servrar_i_miljo)
 from lagring import serverlista, exportera_rapporter
@@ -53,7 +53,7 @@ def main():
             visa_servrar_i_miljo(serverlista, "miljo", args.miljo)
         # Om användaren inte angivit miljö, skriv ut alla.
         else:
-            skriv_ut_servrar(serverlista)
+            visa_servrar(serverlista)
 
     # Om användaren försöker använda endast --miljo miljo...
     elif args.miljo:

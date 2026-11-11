@@ -1,4 +1,5 @@
 # inputkontroll.py
+
 # Kontroller för input från användaren
 
 # Giltiga menyval
@@ -11,10 +12,10 @@ giltiga_miljoer = ["test", "dev", "prod"]
 giltiga_statuskoder = ["up", "down", "unknown"]
 
 # Jämför input med giltiga värden och returnerar True om input är giltigt.
-def validate_choice(input, giltiga_varden):
+def validera_val(indata, giltiga_varden):
 
-    for choice in giltiga_varden:
-        if choice == input:
+    for varde in giltiga_varden:
+        if varde == indata:
             return True
 
     return False
@@ -30,3 +31,7 @@ def vill_avbryta(indata):
 
     except ValueError:
         return False
+
+# Returnerar True om namnet inte är tomt och inte innehåller blanktecken.
+def servernamn_ar_giltigt(namn):
+    return bool(namn) and not any(tecken.isspace() for tecken in namn)

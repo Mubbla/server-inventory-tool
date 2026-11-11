@@ -51,6 +51,7 @@ I `meny.py` finns `kontrollera_status()`, som används när en server eller alla
 I `kontroller.py` skickas ping-kommandot till `subprocess.run()` som en lista. Resultatets exitkod används för att avgöra om servern svarade. Det gör också att programmets CLI kan ge exitkod 1 om en server saknas eller är nere.
 
 ## 7. Källor och hjälpmedel
-Jag har använt kursmaterialet och uppgiftsbeskrivningen för att förstå kraven och planera programmets funktioner. Jag använde W3Schools Python Tutorial för att slå upp undantagshantering och filhantering. För att förstå hur ett Python-program startas från terminalen läste jag Pythons officiella dokumentation, avsnittet Using the Python Interpreter. För CLI-argumenten, till exempel --lista och --kontrollera, använde jag kursmaterialet och fick hjälp av en AI-assistent med att förstå hur argparse används.
 
-Jag har även använt en AI-assistent för att få förklaringar av Python-kod, hjälp med felsökning och stöd med programmets Markdown-dokumentation.
+Jag har använt kursmaterialet och uppgiftsbeskrivningen för att förstå kraven och planera programmets funktioner. Jag använde W3Schools för att slå upp [undantagshantering](https://www.w3schools.com/python/python_try_except.asp) och [filhantering](https://www.w3schools.com/python/python_file_handling.asp). För att förstå hur ett Python-program startas från terminalen läste jag Pythons officiella dokumentation, avsnittet [Using the Python Interpreter](https://docs.python.org/3/tutorial/interpreter.html).
+
+För CLI-argument, till exempel `--lista` och `--kontrollera`, använde jag kursmaterialet och fick hjälp av en AI-assistent att förstå hur `argparse` används. Jag använde också en AI-assistent för förklaringar av Python-kod, felsökning och stöd med programmets Markdown-dokumentation.

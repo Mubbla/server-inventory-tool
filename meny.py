@@ -65,7 +65,7 @@ def visa_meny():
     print("   4. Ta bort server              ")
     print("   5. Kontrollera en server       ")
     print("   6. Kontrollera alla servrar    ")
-    print("   7. Exportera CSV-fil           ")
+    print("   7. Exportera rapporter         ")
     print("   0. Avsluta                     ")
     print("==================================")
     print("")

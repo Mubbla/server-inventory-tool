@@ -112,12 +112,11 @@ Kör `python3 main.py --export` eller välj exportalternativet i textmenyn. Prog
 
 ## Projektstruktur
 
-| Fil | Ansvar |
-| --- | --- |
-| `main.py` | Programmets startpunkt. Läser CLI-argument med `argparse` och startar rätt läge. |
-| `meny.py` | Textmenyn, inmatning och utskrift av serverinformation. |
-| `lagring.py` | Läser och sparar JSON-data samt skapar CSV- och sammanfattningsrapporter. |
-| `kontroller.py` | Kör ping-kontroller med `subprocess`. |
-| `inputkontroll.py` | Innehåller giltiga menyval, miljöer och statusar samt funktioner för inmatningskontroll. |
-| `servrar.json` | Programmets standardfil för serverdata. |
-| `.gitignore` | Anger vilka filer och kataloger Git ska ignorera, till exempel cachefiler och genererade rapporter. |
+- `main.py` – programmets startpunkt. Läser CLI-argument med `argparse` och startar rätt läge.
+- `meny.py` – textmenyn, användarinmatning och utskrift av serverinformation.
+- `serverhantering.py` – söker efter servrar och uppdaterar serverdata.
+- `lagring.py` – läser och sparar JSON-data samt skapar CSV- och sammanfattningsrapporter.
+- `kontroller.py` – kör ping och kontrollerar samt uppdaterar serverstatus.
+- `inputkontroll.py` – innehåller giltiga menyval, miljöer och statusar samt funktioner för att validera inmatning.
+- `servrar.json` – standardfilen för serverdata.
+- `.gitignore` – anger vilka filer och kataloger Git ska ignorera, exempelvis Python-cache och genererade rapporter.

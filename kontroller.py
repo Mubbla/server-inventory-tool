@@ -8,6 +8,7 @@ import subprocess
 ##----    Kontroller för servrarna    ----##
 
 # Returnerar True om servern svarar, annars False
+# Används av både textmeny och CLI.
 def pinga_server(adress):
 
     # Skickar ett ping-paket till servern

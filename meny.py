@@ -1,11 +1,10 @@
 # meny.py
 
-from inputkontroll import (giltiga_statuskoder, giltiga_menyval, giltiga_miljoer,
-                        vill_avbryta, validate_choice)
+from inputkontroll import (giltiga_menyval, giltiga_miljoer,
+                        vill_avbryta, validera_val,servernamn_ar_giltigt)
 from kontroller import pinga_server
 from lagring import spara_servrar, exportera_rapporter
-from datetime import datetime
-
+from serverhantering import hitta_server, hitta_servrar_med_nyckel, uppdatera_serverdata
 
 # Visar och hanterar programmets textmeny.
 def starta_meny(serverlista):
@@ -23,10 +22,10 @@ def starta_meny(serverlista):
         print()
 
         # Kontrollerar att input finns som giltigt menyval.
-        if validate_choice(val, giltiga_menyval):
+        if validera_val(val, giltiga_menyval):
 
             if val == 1:
-                skriv_ut_servrar(serverlista)
+                visa_servrar(serverlista)
 
             elif val == 2:
                 hantera_input_miljo(serverlista)
@@ -70,8 +69,9 @@ def visa_meny():
     print("==================================")
     print("")
 
-# Funktion för att skriva ut alla servrar i en lista
-def skriv_ut_servrar(serverlista):
+# Funktion för att skriva ut alla servrar i en lista.
+# Används av både textmeny och CLI.
+def visa_servrar(serverlista):
     print()
     print(f"{'Namn':<15}{'Adress':<15}{'Miljö':<15}"
           f"{'Roll':<20}{'Status':<15}{'Senast kontrollerad'}")
@@ -99,15 +99,15 @@ def hantera_input_miljo(serverlista):
         visa_servrar_i_miljo(serverlista, "miljo", miljo)
 
 
-
 # Hitta och skriv ut alla servrar i en miljö.
+# Används av både textmeny och CLI.
 def visa_servrar_i_miljo (serverlista, nyckel, varde):
 
     # Hämta servrarna för aktuell miljö.
     servrar_i_miljo = hitta_servrar_med_nyckel(serverlista, nyckel, varde)
 
     if servrar_i_miljo:
-        skriv_ut_servrar(servrar_i_miljo)
+        visa_servrar(servrar_i_miljo)
     else:
         print(f"Inga servrar hittades i miljön '{varde}'.")
 
@@ -124,11 +124,8 @@ def lagg_till(serverlista):
             return
 
         # Avbryt detta varv för att återgå till inmatning av namn/0.
-        if namn == "":
-            print("Namn får inte vara tomt.")
-            continue
-        elif any(tecken.isspace() for tecken in namn):
-            print("Namnet får inte innehålla blanktecken.")
+        if not servernamn_ar_giltigt(namn):
+            print("Namnet får inte vara tomt eller innehålla blanktecken.")
             continue
 
         for server in serverlista:
@@ -169,8 +166,8 @@ def lagg_till(serverlista):
         if vill_avbryta(miljo):
             return
 
-        # Kontrollerar att input finns som giltigt värde.
-        if validate_choice(miljo, giltiga_miljoer):
+        # Kontrollera att input finns som giltigt värde.
+        if validera_val(miljo, giltiga_miljoer):
             break
 
         print("Ogiltig miljö.")
@@ -205,7 +202,9 @@ def lagg_till(serverlista):
     print()
     print(f"servern '{namn}' har lagts till")
 
+
 def ta_bort_server(serverlista):
+
     while True:
         namn = (input("Ange serverns namn (0 för att avbryta): ").strip().lower())
 
@@ -218,73 +217,49 @@ def ta_bort_server(serverlista):
             print("Namn får inte vara tomt.")
             continue
 
-        server_hittad = False
+        vill_ta_bort_i_prod = False
 
-        bekraftelse = None  # null
+        server = hitta_server(serverlista, "namn", namn)
 
-        # Här kan jag använda hitta_server. Sen...
-        for server in serverlista:
-            if server["namn"].lower() == namn:
-                server_hittad = True
-                if server["miljo"] == "prod":
-                    # Bekräftelse för prodmiljö
-                    while True:
-                        print()
-                        bekraftelse = input("Denna server är i prodmiljö. Är du säker tryck retur."
-                                         " (0 för att avbryta) " ).strip()
-                        # Användaren vill ange en annan server. Avsluta bekräftelsens while-loop.
-                        if bekraftelse == "0":
-                            break
-                        # Om användaren skrivit in ett felaktigt värde
-                        elif bekraftelse != "":
-                            print("Ogiltigt val")
-                            continue
-                        # Användaren har bekräftat. Avsluta bekräftelsens while-loop.
-                        if bekraftelse == "":
-                            break
-
-            # Om användaren vill avsluta, avsluta for-loopen.
-            if bekraftelse == "0":
-                break
-
-            # Servern finns. Användaren har bekräftat om prod-miljö. Ta bort servern. Avsluta funktionen.
-            if server_hittad:
-                serverlista.remove(server)
-                spara_servrar(serverlista)
-                print()
-                print(f"Servern '{namn}' har tagits bort.")
-                return
-
-        if not server_hittad:
+        # Om servern inte hittas...
+        if server is None:
             print(f"Servern '{namn}' finns inte.")
-
-        # Om användaren vill avsluta, avsluta while-loopen.
-        if bekraftelse == "0":
+            # ...fråga efter ett nytt namn i while-loopen
             continue
 
+        if server["miljo"] == "prod":
+            # Bekräftelse för prodmiljö
+            while True:
+                print()
+                #
+                svar = input(
+                    "Servern är i prodmiljö. Tryck Retur för att bekräfta: "
+                ).strip()
+                # Användaren har bekräftat. Avsluta bekräftelsens while-loop.
+                if svar == "":
+                    vill_ta_bort_i_prod = True
+                    break
+                # Om användaren vill avbryta ...
+                elif svar == "0":
+                    # ...avbryt bekräftelse-loopen.
+                    break
+                # Om användaren skrivit ett ogiltigt värde...
+                else:
+                    print("Ogiltigt val.")
+                    # ... fråga om bekräftelse igen.
+                    continue
 
-# Har valt denna design för att eventuellt kunna återanvända funktionen.
-# Returnera den första servern med matchande värde i nyckeln.
-def hitta_server(serverlista, nyckel, sokvarde):
+            if not vill_ta_bort_i_prod:
+                # ...fortsätt yttre while-loop och fråga efter ett nytt servernamn.
+                continue
 
-    for server in serverlista:
-        if server[nyckel].lower() == sokvarde.lower():
-            return server
+        # Servern finns. Användaren har bekräftat om prod-miljö. Ta bort servern. Avsluta funktionen.
+        serverlista.remove(server)
+        spara_servrar(serverlista)
+        print()
+        print(f"Servern '{namn}' har tagits bort.")
+        # Fortsätt yttre while-loop och fråga efter ytterligare en server.
 
-    return None
-
-# Har valt denna design för att eventuellt kunna återanvända funktionen.
-# Returnera en lista av servrar med matchande värden i nyckeln.
-def hitta_servrar_med_nyckel(serverlista, nyckel, sokvarde):
-    resultatlista = []
-
-    for server in serverlista:
-        if server[nyckel].lower() == sokvarde.lower():
-            resultatlista.append(server)
-
-    return resultatlista
-
-##### ----- Hjälpunktioner för att kontrollera servrar -----#####
 
 # Anropas från menyn
 def hantera_input_servernamn(serverlista):
@@ -301,7 +276,8 @@ def hantera_input_servernamn(serverlista):
         # while-loopen; användaren får möjlighet att försöka igen.
         kontrollera_server_med_namn(serverlista, namn)
 
-
+# Kontrollera en server.
+# Används av både textmeny och CLI.
 def kontrollera_server_med_namn(serverlista, namn):
 
     server = hitta_server( serverlista, "namn", namn)
@@ -323,7 +299,9 @@ def kontrollera_server_med_namn(serverlista, namn):
     return server
 
 # Anropa kontrollera_server för varje server i listan.
+# Används av både textmeny och CLI.
 def kontrollera_alla_servrar(serverlista):
+
     print()
     print(f"{len(serverlista)} servrar kontaktas...")
     print()
@@ -335,8 +313,7 @@ def kontrollera_alla_servrar(serverlista):
     spara_servrar(serverlista)
 
 # Pinga och uppdatera status.
-# Denna används både för att kontrollera en server och för att kontrollera alla
-# samt från både textmeny och kommandorad.
+# Denna används både för att kontrollera en server och för att kontrollera alla.
 def kontrollera_status(server):
 
     status = "unknown"
@@ -349,21 +326,11 @@ def kontrollera_status(server):
         status = "down"
 
     # Uppdatera serverlistan
-    uppdatera_data(server, "status", status)
+    uppdatera_serverdata(server, "status", status)
 
 
-# Uppdatera ett fält för en server.
-# Har valt denna design för att kunna återanvända funktionen om andra fält än
-# status kan komma att uppdateras.
-def uppdatera_data(server, nyckel, nytt_varde):
-    server[nyckel] = nytt_varde
 
-    # Uppdatera tidpunkten när status ändras till en giltig status.
-    if nyckel == "status" and nytt_varde in giltiga_statuskoder:
-        server["senast_kontrollerad"] = datetime.now().strftime("%Y-%m-%d %H:%M")
-
-# Denna används både för att kontrollera en server och för att kontrollera alla
-# samt från både textmeny och kommandorad.
+# Denna används både för att kontrollera en server och för att kontrollera alla.
 def skriv_ut_serverstatus(server):
 
     print(f"{server['namn']:<15}{server['status']:<15}")

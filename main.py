@@ -61,7 +61,7 @@ def main():
         parser.error("--miljo måste användas tillsammans med --lista")
 
     # Om användaren angett ett servernamn...
-    elif args.kontrollera:
+    elif args.kontrollera is not None:
         server = kontrollera_server_med_namn(serverlista, args.kontrollera)
 
         if server:

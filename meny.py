@@ -3,7 +3,7 @@
 from inputkontroll import (giltiga_statuskoder, giltiga_menyval, giltiga_miljoer,
                         vill_avbryta, validate_choice)
 from kontroller import pinga_server
-from lagring import spara_servrar, exportera_csv
+from lagring import spara_servrar, exportera_rapporter
 from datetime import datetime
 
 
@@ -29,7 +29,7 @@ def starta_meny(serverlista):
                 skriv_ut_servrar(serverlista)
 
             elif val == 2:
-                visa_servrar_i_miljo(serverlista)
+                hantera_input_miljo(serverlista)
 
             elif val == 3:
                 lagg_till(serverlista)
@@ -38,13 +38,13 @@ def starta_meny(serverlista):
                 ta_bort_server(serverlista)
 
             elif val == 5:
-                kontrollera_serverinput(serverlista)
+                hantera_input_servernamn(serverlista)
 
             elif val == 6:
                 kontrollera_alla_servrar(serverlista)
 
             elif val == 7:
-                exportera_csv(serverlista)
+                exportera_rapporter(serverlista)
 
             elif val == 0:
                 print(f"Avslutar....")
@@ -80,8 +80,8 @@ def skriv_ut_servrar(serverlista):
         print(f"{server['namn']:<15}{server['adress']:<15}{server['miljo']:<15}"
               f"{server['roll']:<20}{server['status']:<15}{server['senast_kontrollerad']}")
 
-#
-def kontrollera_input_miljo(serverlista):
+# Inputkontroll - ska lägga till meddelande om inga servrar i miljö
+def hantera_input_miljo(serverlista):
 
     while True:
         print()
@@ -92,21 +92,24 @@ def kontrollera_input_miljo(serverlista):
             return
 
         # Avbryt detta varv för att återgå till inmatning av miljo/0.
-        if miljo == "":
-            print("Namn får inte vara tomt.")
+        if miljo == "" or miljo not in giltiga_miljoer:
+            print("Ogiltigt värde.")
             continue
+
+        visa_servrar_i_miljo(serverlista, "miljo", miljo)
 
 
 
 # Hitta och skriv ut alla servrar i en miljö.
 def visa_servrar_i_miljo (serverlista, nyckel, varde):
 
-    # Hämta alla servrar i miljön till en lista
+    # Hämta servrarna för aktuell miljö.
     servrar_i_miljo = hitta_servrar_med_nyckel(serverlista, nyckel, varde)
 
     if servrar_i_miljo:
         skriv_ut_servrar(servrar_i_miljo)
-
+    else:
+        print(f"Inga servrar hittades i miljön '{varde}'.")
 
 # Funktion för att lägga till en ny server
 def lagg_till(serverlista):
@@ -116,13 +119,16 @@ def lagg_till(serverlista):
         namn = (input("Ange serverns namn (0 för att avbryta): ").strip().lower())
         namn_upptaget = False
 
-        # Kontrollera om användaren vill avbryta. Avslutar isåfall funktionen.
+        # Om användaren vill avbryta, avsluta funktionen.
         if vill_avbryta(namn):
             return
 
         # Avbryt detta varv för att återgå till inmatning av namn/0.
         if namn == "":
             print("Namn får inte vara tomt.")
+            continue
+        elif any(tecken.isspace() for tecken in namn):
+            print("Namnet får inte innehålla blanktecken.")
             continue
 
         for server in serverlista:
@@ -143,7 +149,7 @@ def lagg_till(serverlista):
 
     # Adress
     while True:
-        adress = input("Ange serverns adress (0 för att återgå till huvudmenyn): ").strip()
+        adress = input("Ange serverns adress (0 för att avbryta): ").strip()
 
         # Kontrollera om användaren vill återgå till huvudmenyn. Avslutar isåfall funktionen.
         if vill_avbryta(adress):
@@ -157,7 +163,7 @@ def lagg_till(serverlista):
 
     # Miljö
     while True:
-        miljo = input("Ange miljö (dev/test/prod) (0 för att återgå till huvudmenyn): ").strip().lower()
+        miljo = input("Ange miljö (dev/test/prod) (0 för att avbryta): ").strip().lower()
 
         # Kontrollera om användaren vill återgå till huvudmenyn. Avslutar isåfall funktionen.
         if vill_avbryta(miljo):
@@ -167,11 +173,11 @@ def lagg_till(serverlista):
         if validate_choice(miljo, giltiga_miljoer):
             break
 
-        print("Ogiltig miljö. Ange dev, test eller prod.")
+        print("Ogiltig miljö.")
 
     # Roll
     while True:
-        roll = input("Ange serverns roll (0 för att återgå till huvudmenyn): ").strip()
+        roll = input("Ange serverns roll (0 för att avbryta): ").strip()
 
         # Kontrollera om användaren vill återgå till huvudmenyn. Avslutar isåfall funktionen.
         if vill_avbryta(roll):
@@ -237,13 +243,12 @@ def ta_bort_server(serverlista):
                         if bekraftelse == "":
                             break
 
-            # Användaren vill ange en annan server. Avsluta for-loopen.
+            # Om användaren vill avsluta, avsluta for-loopen.
             if bekraftelse == "0":
                 break
 
             # Servern finns. Användaren har bekräftat om prod-miljö. Ta bort servern. Avsluta funktionen.
             if server_hittad:
-                # Mer felhantering....??
                 serverlista.remove(server)
                 spara_servrar(serverlista)
                 print()
@@ -253,7 +258,7 @@ def ta_bort_server(serverlista):
         if not server_hittad:
             print(f"Servern '{namn}' finns inte.")
 
-        # Går vidare i yttre while-loopen och frågar efter servernaman
+        # Om användaren vill avsluta, avsluta while-loopen.
         if bekraftelse == "0":
             continue
 
@@ -268,6 +273,7 @@ def hitta_server(serverlista, nyckel, sokvarde):
 
     return None
 
+# Har valt denna design för att eventuellt kunna återanvända funktionen.
 # Returnera en lista av servrar med matchande värden i nyckeln.
 def hitta_servrar_med_nyckel(serverlista, nyckel, sokvarde):
     resultatlista = []
@@ -278,10 +284,10 @@ def hitta_servrar_med_nyckel(serverlista, nyckel, sokvarde):
 
     return resultatlista
 
-##### ----- Funktioner för att kontrollera servrar -----#####
+##### ----- Hjälpunktioner för att kontrollera servrar -----#####
 
 # Anropas från menyn
-def kontrollera_serverinput(serverlista):
+def hantera_input_servernamn(serverlista):
 
     while True:
         print()
@@ -293,20 +299,16 @@ def kontrollera_serverinput(serverlista):
 
         # Oavsett om servern finns eller ej, körs nästa varv i
         # while-loopen; användaren får möjlighet att försöka igen.
-        server = kontrollera_server_med_namn(serverlista, namn)
+        kontrollera_server_med_namn(serverlista, namn)
 
-        if server:
-            continue
-        else:
-            print(f"Servern '{namn}' finns inte.")
-            print()
-            continue
 
 def kontrollera_server_med_namn(serverlista, namn):
 
     server = hitta_server( serverlista, "namn", namn)
 
     if not server:
+        print(f"Servern '{namn}' finns inte.")
+        print()
         return None
 
     print()

@@ -85,7 +85,7 @@ def hantera_input_miljo(serverlista):
 
     while True:
         print()
-        miljo = (input("Ange miljö (0 för att avbryta): ").strip().lower())
+        miljo = (input("Ange miljö (dev/test/prod) (0 för att avbryta): ").strip().lower())
 
         # Kontrollera om användaren vill återgå till huvudmenyn. Avslutar isåfall funktionen.
         if vill_avbryta(miljo):
@@ -117,7 +117,6 @@ def lagg_till(serverlista):
     # Servernamn
     while True:
         namn = (input("Ange serverns namn (0 för att avbryta): ").strip().lower())
-        namn_upptaget = False
 
         # Om användaren vill avbryta, avsluta funktionen.
         if vill_avbryta(namn):
@@ -128,17 +127,8 @@ def lagg_till(serverlista):
             print("Namnet får inte vara tomt eller innehålla blanktecken.")
             continue
 
-        for server in serverlista:
-            # Kontrollera om servernamnet är upptaget
-            if server["namn"].lower() == namn:
-                print()
-                print("En server med det namnet finns redan.")
-                namn_upptaget = True
-                # Avsluta for-loop om namnet hittats
-                break
-
-        # Avbryt detta varv för att återgå till inmatning av namn/0.
-        if namn_upptaget:
+        # Om servern redan finns, avbryt detta varv för att återgå till inmatning av namn/0.
+        if hitta_server(serverlista, "namn", namn):
             continue
 
         # Avbryt while-loop när allt är rätt och gå vidare
@@ -181,7 +171,7 @@ def lagg_till(serverlista):
             return
 
         if roll == "":
-            print("Roll får inte vara tom.")
+            print("Roll får inte vara tomt.")
             continue
 
         break
@@ -206,18 +196,16 @@ def lagg_till(serverlista):
 def ta_bort_server(serverlista):
 
     while True:
-        namn = (input("Ange serverns namn (0 för att avbryta): ").strip().lower())
+        print()
+        namn = (input("Ange vilken server vill du ta bort (0 för att avbryta): ").strip().lower())
 
         # Kontrollera om användaren vill återgå till huvudmenyn. Avslutar isåfall funktionen.
         if vill_avbryta(namn):
             return
 
-        # if giltigt_varde() kanske sen, samla ihop
-        if namn == "":
-            print("Namn får inte vara tomt.")
+        if not servernamn_ar_giltigt(namn):
+            print("Namn får inte vara tomt/innehålla blanktecken.")
             continue
-
-        vill_ta_bort_i_prod = False
 
         server = hitta_server(serverlista, "namn", namn)
 
@@ -228,13 +216,13 @@ def ta_bort_server(serverlista):
             continue
 
         if server["miljo"] == "prod":
+            vill_ta_bort_i_prod = False
             # Bekräftelse för prodmiljö
             while True:
                 print()
                 #
                 svar = input(
-                    "Servern är i prodmiljö. Tryck Retur för att bekräfta: "
-                ).strip()
+                    "Servern är i prodmiljö. Tryck Retur för att bekräfta (0 för att avbryta): ").strip()
                 # Användaren har bekräftat. Avsluta bekräftelsens while-loop.
                 if svar == "":
                     vill_ta_bort_i_prod = True

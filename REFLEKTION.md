@@ -4,7 +4,7 @@ I arbetet fanns det både krav som bestämde hur programmet skulle fungera och v
 
 ## 1. Datastruktur för servrarna
 
-G1 kräver att servrarna lagras som dictionaries i en lista. Jag följde det kravet och använder fälten `namn`, `adress`, `miljo`, `roll`, `status` och `senast_kontrollerad` för varje server. I `meny.py` går funktionerna `hitta_server()` och `hitta_servrar_med_nyckel()` igenom listan för att hitta en server eller samla alla servrar som matchar ett värde.
+G1 kräver att servrarna lagras som dictionaries i en lista. Jag följde det kravet och använder fälten `namn`, `adress`, `miljo`, `roll`, `status` och `senast_kontrollerad` för varje server. I `serverhantering.py` går funktionerna `hitta_server()` och `hitta_servrar_med_nyckel()` igenom listan för att hitta en server eller samla alla servrar som matchar ett värde.
 
 Ett alternativ hade varit en dictionary där servernamnet är nyckeln. Då hade det gått snabbt att slå upp en server med namn, men det hade inte följt datastrukturen som uppgiften kräver. En lista passar bra när programmet ska visa eller kontrollera alla servrar. Nackdelen är att namnuppslagning kräver att listan genomsöks. Om uppgiftens krav ändrades och inventeringen blev mycket större skulle jag överväga en databas.
 
@@ -14,7 +14,7 @@ G5 kräver att ändringar sparas till JSON-filen. I `meny.py` anropas `spara_ser
 
 Ett alternativ hade varit att vänta med att spara tills programmet avslutas. Det hade minskat antalet skrivningar till filen, men ändringar skulle kunna gå förlorade om programmet stängdes oväntat. Med min lösning finns ändringarna kvar efter att operationen har slutförts. Nackdelen är att filen skrivs oftare. Om många uppdateringar gjordes automatiskt skulle jag överväga en databas för snabbare uppslagning och säkrare datauppdateringar.
 
-## ## 3. Val av modulindelning och parametrar
+## 3. Val av modulindelning och parametrar
 
 G17 kräver att programmet delas upp i minst tre egna moduler. Kravet bestämde alltså att jag skulle använda flera filer, men jag valde själv hur jag skulle fördela ansvaret mellan dem. `main.py` startar programmet och hanterar CLI-argument. `meny.py` sköter textmenyn och användarinmatningen. I `serverhantering.py` finns funktioner för att hitta servrar och uppdatera deras data. `lagring.py` hanterar filer och rapporter, medan `kontroller.py` sköter ping och statuskontroll. `inputkontroll.py` innehåller funktioner och värden för validering.
 

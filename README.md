@@ -33,6 +33,8 @@ Programmet använder moduler från Pythons standardbibliotek och kräver inga ex
 
 ## Installation
 
+Repositoryt finns på [GitHub](https://github.com/Mubbla/server-inventory-tool).
+
 Klona repositoryt och gå till projektmappen:
 
 ```bash

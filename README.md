@@ -81,9 +81,14 @@ python3 main.py --kontrollera-alla
 
 # Skapa rapporter
 python3 main.py --export
+
+# Visa vilken datafil programmet använder och lista servrarna
+python3 main.py --verbose --lista
 ```
 
 `--miljo` används tillsammans med `--lista`. Giltiga miljöer är `dev`, `test` och `prod`.
+
+Flaggan `--verbose` visar vilken datafil programmet använder. `--miljo` används tillsammans med `--lista`. Giltiga miljöer är `dev`, `test` och `prod`.
 
 Kontrollkommandona använder exitkoder så att de kan användas i skript:
 

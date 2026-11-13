@@ -48,7 +48,15 @@ VG-fördjupningen kräver att CSV-exporten kompletteras med en textrapport som r
 
 I `exportera_csv()` valde jag semikolon som avgränsare. Ett alternativ var kommatecken, men när jag provade filen i svensk Excel hamnade värdena i en enda kolumn. Med semikolon delades de upp i kolumner direkt. Nackdelen är att olika kalkylprogram och regionala inställningar kan förvänta sig olika avgränsare. Om rapporten skulle användas internationellt skulle jag överväga att göra avgränsaren konfigurerbar.
 
-## 8. Om verktyget skulle växa
+## 8. Flaggan `--verbose`
+
+Jag lade till flaggan `--verbose` för att kunna se vilken datafil programmet använder. I `main.py` läses flaggan av med `argparse`. När den anges hämtas filnamnet med `hamta_datafil()` från `lagring.py` och skrivs ut.
+
+Ett alternativ hade varit att alltid skriva ut datafilens namn. Då skulle informationen också visas när användaren bara vill lista servrar eller skapa en rapport. Med `--verbose` visas den extra informationen bara när användaren ber om den. Nackdelen är att användaren behöver känna till och ange flaggan för att se sökvägen.
+
+Om programmet fick fler inställningar skulle `--verbose` kunna visa även dem, exempelvis rapportkatalogen och pingkommandot. I den här versionen begränsade jag flaggan till datafilen för att hålla funktionen enkel.
+
+## 9. Om verktyget skulle växa
 
 För en mindre inventering är det enkelt att läsa in JSON-filen och kontrollera servrarna efter varandra. Vid 1 000 servrar eller nattliga körningar kan den sekventiella kontrollen ta lång tid, särskilt om flera servrar svarar långsamt. Då skulle tidsgränser, loggning och eventuellt parallella kontroller bli viktigare.
 

@@ -21,7 +21,7 @@ CSV används för rapporten eftersom serverinformationen då kan öppnas som tab
 
 ## 4. Programmets moduler och funktioner
 
-I `main.py` finns funktionen `main()`. Den använder `argparse` för att läsa kommandoradsargument och anropa rätt funktion. Om programmet startas utan argument startar textmenyn.
+I `main.py` finns funktionen `main()`. Den använder `argparse` för att läsa kommandoradsargument och anropa rätt funktion. Flaggan `--verbose` visar vilken datafil programmet använder. Om programmet startas utan argument startar textmenyn.
 
 `meny.py` innehåller textmenyn och funktioner som hanterar inmatning, visar servrar, lägger till och tar bort servrar samt anropar serverkontrollerna.
 

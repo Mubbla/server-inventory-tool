@@ -31,7 +31,7 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter
     )
 
-    # Definiera vilka argument som kan användas från kommandoraden.
+    # Definiera vilka argument som ptogrammet tar emot från kommandoraden.
     parser.add_argument("--lista", action="store_true",
                         help="Visa alla servrar.")
     parser.add_argument("--miljo", choices=giltiga_miljoer,
@@ -43,14 +43,14 @@ def main():
                         help="Pinga alla servrar.")
     parser.add_argument("--export", action="store_true",
                         help="Skapa CSV-rapport och sammanfattning.")
-    #
+    # Gör det möjligt att visa extra information när programmet körs.
     parser.add_argument("--verbose", action="store_true",
-                        help="Visa extra information, till exempel vilken datafil som används."
+                        help="Visa sökvägen till datafilen."
     )
 
     args = parser.parse_args()
 
-    # Kommentar
+    # # Visar vilken datafil programmet använder när --verbose anges.
     if args.verbose:
         print(f"Datafil: {hamta_datafil()}")
 

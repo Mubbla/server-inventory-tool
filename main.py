@@ -8,6 +8,7 @@
 import argparse
 # Används för att avsluta programmet med en exitkod via sys.exit().
 import sys
+from lagring import serverlista, exportera_rapporter, hamta_datafil
 
 from meny import (starta_meny, visa_servrar,
                   kontrollera_server_med_namn, kontrollera_alla_servrar,
@@ -42,8 +43,16 @@ def main():
                         help="Pinga alla servrar.")
     parser.add_argument("--export", action="store_true",
                         help="Skapa CSV-rapport och sammanfattning.")
+    #
+    parser.add_argument("--verbose", action="store_true",
+                        help="Visa extra information, till exempel vilken datafil som används."
+    )
 
     args = parser.parse_args()
+
+    # Kommentar
+    if args.verbose:
+        print(f"Datafil: {hamta_datafil()}")
 
     # CLI-kommandon som kör klart utan fel får automatiskt exitkod 0.
     if args.lista:

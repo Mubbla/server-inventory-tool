@@ -4,9 +4,9 @@
 
 I `meny.py`, i funktionen `lagg_till()`, används en `while True`-loop för att fråga efter servernamn tills användaren skriver in ett godkänt namn. Villkoren kontrollerar bland annat om namnet är tomt eller redan används. `continue` börjar om loopen, medan `break` lämnar den när namnet är godkänt.
 
-I `inputkontroll.py`, i funktionen `validate_choice()`, används en `for`-loop för att jämföra ett angivet värde med alla giltiga värden i en lista. Funktionen returnerar `True` när en matchning hittas och `False` om loopen inte hittar någon.
+I `inputkontroll.py`, i funktionen `validera_val()`, används en `for`-loop för att jämföra ett angivet värde med alla giltiga värden i en lista. Funktionen returnerar `True` när en matchning hittas och `False` om loopen inte hittar någon.
 
-I `meny.py`, i funktionen `hitta_server()`, används parametrarna `serverlista`, `nyckel` och `sokvarde` för att söka efter en server. Om funktionen hittar en matchande server returnerar den serverns dictionary. Om ingen matchning hittas returnerar den `None`.
+I `serverhantering.py`, i funktionen `hitta_server()`, används parametrarna `serverlista`, `nyckel` och `sokvarde` för att söka efter en server. Om funktionen hittar en matchande server returnerar den serverns dictionary. Om ingen matchning hittas returnerar den `None`.
 
 ## 2. Lista med dictionaries och datatyper
 Jag använder en lista med dictionaries för att lagra servrarna. Listan samlar alla servrar, och varje dictionary innehåller uppgifter om en server. I lagring.py läses listan in från JSON-filen. Funktionerna i meny.py får listan som parameter när de behöver visa eller ändra serverdata. I serverhantering.py finns sökfunktionerna hitta_server() och hitta_servrar_med_nyckel(), som söker igenom listan efter servrar som matchar namn eller miljö.

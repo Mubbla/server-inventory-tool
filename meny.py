@@ -16,10 +16,9 @@ def starta_meny(serverlista):
         try:
             val = int(input("Ditt val: "))
         except ValueError:
+            print()
             print("Du måste ange en siffra!")
             continue
-
-        print()
 
         # Kontrollerar att input finns som giltigt menyval.
         if validera_val(val, giltiga_menyval):
@@ -51,7 +50,6 @@ def starta_meny(serverlista):
                 break
         else:
             print(f"Ogiltigt val. Försök igen.")
-
 
 # Funktion för att visa meny
 def visa_meny():
@@ -92,8 +90,9 @@ def hantera_input_miljo(serverlista):
             return
 
         # Avbryt detta varv för att återgå till inmatning av miljo/0.
-        if miljo == "" or miljo not in giltiga_miljoer:
-            print("Ogiltigt värde.")
+        if not validera_val(miljo, giltiga_miljoer):
+            print()
+            print("Ogiltig miljö.")
             continue
 
         visa_servrar_i_miljo(serverlista, "miljo", miljo)
@@ -109,6 +108,7 @@ def visa_servrar_i_miljo (serverlista, nyckel, varde):
     if servrar_i_miljo:
         visa_servrar(servrar_i_miljo)
     else:
+        print()
         print(f"Inga servrar hittades i miljön '{varde}'.")
 
 # Funktion för att lägga till en ny server
@@ -116,6 +116,7 @@ def lagg_till(serverlista):
 
     # Servernamn
     while True:
+        print()
         namn = (input("Ange serverns namn (0 för att avbryta): ").strip().lower())
 
         # Om användaren vill avbryta, avsluta funktionen.
@@ -124,18 +125,22 @@ def lagg_till(serverlista):
 
         # Avbryt detta varv för att återgå till inmatning av namn/0.
         if not servernamn_ar_giltigt(namn):
+            print()
             print("Namnet får inte vara tomt eller innehålla blanktecken.")
             continue
 
         # Om servern redan finns, avbryt detta varv för att återgå till inmatning av namn/0.
         if hitta_server(serverlista, "namn", namn):
+            print()
+            print("En server med detta namn finns redan..")
             continue
 
-        # Avbryt while-loop när allt är rätt och gå vidare
+        # Avbryt while-loop när allt är rätt och gå vidare.
         break
 
     # Adress
     while True:
+        print()
         adress = input("Ange serverns adress (0 för att avbryta): ").strip()
 
         # Kontrollera om användaren vill återgå till huvudmenyn. Avslutar isåfall funktionen.
@@ -143,6 +148,7 @@ def lagg_till(serverlista):
             return
 
         if adress == "":
+            print()
             print("Adress får inte vara tom.")
             continue
 
@@ -150,6 +156,7 @@ def lagg_till(serverlista):
 
     # Miljö
     while True:
+        print()
         miljo = input("Ange miljö (dev/test/prod) (0 för att avbryta): ").strip().lower()
 
         # Kontrollera om användaren vill återgå till huvudmenyn. Avslutar isåfall funktionen.
@@ -160,10 +167,12 @@ def lagg_till(serverlista):
         if validera_val(miljo, giltiga_miljoer):
             break
 
+        print()
         print("Ogiltig miljö.")
 
     # Roll
     while True:
+        print()
         roll = input("Ange serverns roll (0 för att avbryta): ").strip()
 
         # Kontrollera om användaren vill återgå till huvudmenyn. Avslutar isåfall funktionen.
@@ -171,6 +180,7 @@ def lagg_till(serverlista):
             return
 
         if roll == "":
+            print()
             print("Roll får inte vara tomt.")
             continue
 
@@ -204,6 +214,7 @@ def ta_bort_server(serverlista):
             return
 
         if not servernamn_ar_giltigt(namn):
+            print()
             print("Namn får inte vara tomt/innehålla blanktecken.")
             continue
 
@@ -211,6 +222,7 @@ def ta_bort_server(serverlista):
 
         # Om servern inte hittas...
         if server is None:
+            print()
             print(f"Servern '{namn}' finns inte.")
             # ...fråga efter ett nytt namn i while-loopen
             continue
@@ -220,9 +232,8 @@ def ta_bort_server(serverlista):
             # Bekräftelse för prodmiljö
             while True:
                 print()
-                #
                 svar = input(
-                    "Servern är i prodmiljö. Tryck Retur för att bekräfta (0 för att avbryta): ").strip()
+                    "Servern är i prodmiljö. Tryck Retur för att bekräfta eller 0 för att ange ett annat servernamn/avbryta: ").strip()
                 # Användaren har bekräftat. Avsluta bekräftelsens while-loop.
                 if svar == "":
                     vill_ta_bort_i_prod = True
@@ -233,6 +244,7 @@ def ta_bort_server(serverlista):
                     break
                 # Om användaren skrivit ett ogiltigt värde...
                 else:
+                    print()
                     print("Ogiltigt val.")
                     # ... fråga om bekräftelse igen.
                     continue
@@ -241,7 +253,7 @@ def ta_bort_server(serverlista):
                 # ...fortsätt yttre while-loop och fråga efter ett nytt servernamn.
                 continue
 
-        # Servern finns. Användaren har bekräftat om prod-miljö. Ta bort servern. Avsluta funktionen.
+        # Servern finns. Användaren har bekräftat om prod-miljö. Ta bort servern.
         serverlista.remove(server)
         spara_servrar(serverlista)
         print()
@@ -271,8 +283,8 @@ def kontrollera_server_med_namn(serverlista, namn):
     server = hitta_server( serverlista, "namn", namn)
 
     if not server:
-        print(f"Servern '{namn}' finns inte.")
         print()
+        print(f"Servern '{namn}' finns inte.")
         return None
 
     print()
@@ -299,9 +311,6 @@ def kontrollera_alla_servrar(serverlista):
         skriv_ut_serverstatus(server)
 
     spara_servrar(serverlista)
-
-
-
 
 
 # Denna används både för att kontrollera en server och för att kontrollera alla.

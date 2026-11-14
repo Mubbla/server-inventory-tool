@@ -88,7 +88,7 @@ python3 main.py --verbose --lista
 
 `--miljo` används tillsammans med `--lista`. Giltiga miljöer är `dev`, `test` och `prod`.
 
-Flaggan `--verbose` visar vilken datafil programmet använder. `--miljo` används tillsammans med `--lista`. Giltiga miljöer är `dev`, `test` och `prod`.
+Flaggan `--verbose` visar vilken datafil programmet använder. 
 
 Kontrollkommandona använder exitkoder så att de kan användas i skript:
 
